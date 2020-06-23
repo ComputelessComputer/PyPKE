@@ -2,7 +2,10 @@ from tqdm import tqdm
 import argparse
 import sys
 
+# file path where you are going to save the *.dat file
 file_path = 'C:/Users/John/Desktop/PKE_data/RodDrop/'
+
+# constants for ramp function
 super_small = -100000000
 threshold = 0.000001
 
