@@ -4,7 +4,7 @@
 Solving the Point kinetics equation via Taylor expansion
 
 ## How it began
-Final project to Nuclear Physics Experiment 2020 spring semester in SNU
+Final project to Nuclear Reactor Physics Experiment 2020 spring semester in SNU
 
 ## How to install PyPKE
 1. Git clone to local environment or virtual environment
