@@ -10,14 +10,21 @@ Final project to Nuclear Physics Experiment 2020 spring semester in SNU
 1. Git clone to local environment or virtual environment
 ```
 $ git clone https://github.com/ComputelessComputer/PyPKE
+Cloning into 'PyPKE'...
+remote: Enumerating objects: 21, done.
+remote: Counting objects: 100% (21/21), done.
+remote: Compressing objects: 100% (20/20), done.
+remote: Total 21 (delta 4), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (21/21), done.
 ```
 
 2. Install required packages
 ```
 $ pip install -r requirements.txt
+Requirement already satisfied: tqdm in /opt/anaconda3/lib/python3.7/site-packages (from -r requirements.txt (line 1)) (4.36.1)
 ```
 
-3. Run the program
+3. Run the program - See [Basic options] for more information
 ```
 $ python PyPKE.py
 ```
