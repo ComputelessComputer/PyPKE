@@ -2,32 +2,74 @@ from tqdm import tqdm
 import argparse
 import sys
 
-# file path where you are going to save the *.dat file
-file_path = 'C:/Users/John/Desktop/PKE_data/RodDrop/'
+# The file path where you are going to save the *.dat file
+# The default directory will be where you place your PyPKE.py at
+# For example, if you run PyPKE.py on your Desktop directory,
+# the *.dat file will be made there too
+file_path = './'
+parameters_file_name = 'kinetics_parameters.txt'
 
 # constants for ramp function
 super_small = -100000000
 threshold = 0.000001
 
+# This function reads the K.P. input text file
+def read_kinetics_parameters(name):
+    f = open(file_path + parameters_file_name, 'rt')
+    beta_str_list, lda_str_list = [], []
+    life = 0.0001
+    name = '[' + name + ']'
+
+    while True:
+        line = f.readline()
+        if '<END>' in line:
+            sys.exit('There is no match!')
+        if name in line:
+            line = f.readline()
+            if '<Beta>' in line:
+                line = f.readline()
+                beta_str_list = line.split()
+            line = f.readline()
+            if '<Lambda>' in line:
+                line = f.readline()
+                lda_str_list = line.split()
+            line = f.readline()
+            if '<Life-time>' in line:
+                line = f.readline()
+                life = float(line)
+            break
+    f.close()
+    beta, lda = [], []
+    for beta_str in beta_str_list:
+        beta.append(float(beta_str))
+    for lda_str in lda_str_list:
+        lda.append(float(lda_str))
+    print('Kinetics parameters being used in PyPKE are the following,\nBeta\n',beta,'\nLambda\n', lda, '\nPrompt neutron life time\n', life)
+    return [beta, lda, life]
+
 
 class PKE(object):
     def __init__(self, reactivity=0, mode_number=0):
-        self.beta = [0.000331, 0.002198, 0.001963, 0.003972, 0.001156, 0.000465]
-        self.lda = [0.0124, 0.0305, 0.1110, 0.3010, 1.1300, 3.0000]
-        #self.beta = [0.000266, 0.001491, 0.001316, 0.002849, 0.000896, 0.000182]
-        #self.lda = [0.0127, 0.0317, 0.155, 0.311, 1.4, 3.87]
+        print('Welcome to PyPKE!\nIf you want more information about the program,\n'
+              'please refer to the README.md or visit the GitHub URL.\n'
+              'https://github.com/ComputelessComputer/PyPKE')
+        # default kinetics parameters are based on AGN-201K from KHU
+        print('\nThese are the names for the various kinetic parameters serviced by '
+              'PyPKE\n========================================================================\n'
+              'AGN-201K\n'
+              'REFERENCE-1\n')
+        self.name = input('Please enter the kinetics parameters model name: ')
+        self.name = self.name.upper()
+        self.beta, self.lda, self.life = read_kinetics_parameters(self.name)
         self.time_step = 0.0001
         self.rho = reactivity
-        self.life = 1E-4
-        #self.life = 0.00002
         self.mode = mode_number
         self.gen = self.life * (1 - self.rho)
-        #self.gen = 0.00002
         self.neutron_density = 1
         self.precursor_density = []
         for i in range(6):
-            tmp = self.beta[i] / self.lda[i] / self.gen
-            self.precursor_density.append(tmp)
+            precursor_initial = self.beta[i] / self.lda[i] / self.gen
+            self.precursor_density.append(precursor_initial)
 
     # Update for ramp
     def reactivity_function(self, time):
@@ -71,9 +113,9 @@ class PKE(object):
             file_name += "[Step]"
         elif self.mode == 1:
             file_name += "[Ramp]"
-        file_name += 'PyPKE_rho=' + rho_string + '.dat'
+        file_name += 'PyPKE_rho=' + rho_string + 'kp=' + self.name + '.dat'
         f = open(file_path + file_name, 'wt')
-        # data until 300s
+        print('Writing neutron and precursor data from 0s to 100s')
         for val in tqdm(range(int(100 / self.time_step))):
             t = val * self.time_step
             if self.mode == 1:
@@ -109,11 +151,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
     tmp = 0
     if args.k:
+        print('Multiplication mode', end=' ')
         tmp = 1 - 1 / args.k
     if args.r:
+        print('Reactivity mode', end=' ')
         tmp = args.r
     if args.mode == 0:
-        print("Mode 0 : step function")
+        print("+ step function\n")
     elif args.mode == 1:
-        print("Mode 1 : ramp function")
+        print("+ ramp function\n")
     main(tmp, args.mode)
