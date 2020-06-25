@@ -8,23 +8,23 @@ Final project to Nuclear Physics Experiment 2020 spring semester in SNU
 
 ## How to install PyPKE
 1. Git clone to local environment or virtual environment
-'''
+```
 $ git clone https://github.com/ComputelessComputer/PyPKE
-'''
+```
 
 2. Install required packages
-'''
+```
 $ pip install -r requirements.txt
-'''
+```
 
 3. Run the program
-'''
+```
 $ python PyPKE.py
-'''
+```
 
 ## Basic options
 1. To see options
-'''
+```
 $ python PyPKE.py -h
 usage: PyPKE.py [-h] [--k K] [--r R] [--mode MODE]
 
@@ -33,17 +33,17 @@ optional arguments:
   --k K        Multiplication factor
   --r R        Reactivity
   --mode MODE  default : step / 1 : ramp_dec / 2: ramp_inc
-'''
+```
 2. Reactivity mode
-'''
+```
 $ python PyPKE.py --r 0.001
-'''
+```
 3. Selecting reactivity change function
-'''
+```
 $ python PyPKE.py --mode 1
-'''
+```
 4. They can be typed in altogether
-'''
+```
 $ python PyPKE.py --r 0.001 --mode 0
 Welcome to PyPKE!
 If you want more information about the program,
@@ -65,5 +65,5 @@ Prompt neutron life time
  0.0001
 Writing neutron and precursor data from 0s to 100s
 100%|███████████████████████████████████████████████████████████████████████████████| 1000000/1000000 [00:08<00:00, 111892.13it/s]
-'''
+```
 ## To be continued...
