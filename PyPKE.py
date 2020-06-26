@@ -81,7 +81,7 @@ class PKE(object):
 
     def neutron(self, time):
         time = time // self.time_step * self.time_step
-        if time - self.time_step == 0:
+        if time == 0:
             return self.neutron_density
         else:
             res = self.neutron_density * (1 + self.time_step * (self.rho - sum(self.beta)) / self.gen)
@@ -92,7 +92,7 @@ class PKE(object):
 
     def precursor(self, index, time):
         time = time // self.time_step * self.time_step
-        if time - self.time_step == 0:
+        if time == 0:
             return self.precursor_density[index]
         else:
             res = self.precursor_density[index] * (1 - self.time_step * self.lda[index]) \
@@ -110,10 +110,10 @@ class PKE(object):
         rho_string = "{:.4f}".format(self.rho)
         file_name = ""
         if self.mode == 0:
-            file_name += "[Step]"
+            file_name += "[Step] "
         elif self.mode == 1:
-            file_name += "[Ramp]"
-        file_name += 'PyPKE_rho=' + rho_string + 'kp=' + self.name + '.dat'
+            file_name += "[Ramp] "
+        file_name += 'PyPKE_rho=' + rho_string + '_kp=' + self.name + '.dat'
         f = open(file_path + file_name, 'wt')
         print('Writing neutron and precursor data from 0s to 100s')
         for val in tqdm(range(int(100 / self.time_step))):
