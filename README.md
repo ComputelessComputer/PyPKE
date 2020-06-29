@@ -1,10 +1,12 @@
 # PyPKE
 
-## Purpose
+## Introduction
+### Purpose
 Solving the Point kinetics equation via Taylor expansion
-
-## How it began
+### How it began
 Final project to Nuclear Reactor Physics Experiment 2020 spring semester in SNU
+### Open-source project
+If you have any suggestions to improve PyPKE, please contact via e-mail; botsforme@snu.ac.kr
 
 ## How to install PyPKE
 1. Git clone to local environment or virtual environment
