@@ -25,18 +25,18 @@ Unpacking objects: 100% (21/21), done.
 $ pip install -r requirements.txt
 Requirement already satisfied: tqdm in /opt/anaconda3/lib/python3.7/site-packages (from -r requirements.txt (line 1)) (4.36.1)
 ```
-If this doesn't work, that is probably because you do NOT have pip installed in your environment.
+  If this doesn't work, that is probably because you do NOT have pip installed in your environment.
 
 ```
 $ sudo apt install python-pip
 ...
 ```
-Also, you might want to check your Python version.
+  Also, you might want to check your Python version.
 ```
 $ python -V
 Python 3.6.9
 ```
-If the version is 3.X, there will be no problem for running PyPKE.
+  If the version is 3.X, there will be no problem for running PyPKE.
 
 3. Run the program - See [Basic options] for more information
 ```
