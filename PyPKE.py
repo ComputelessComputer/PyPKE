@@ -73,7 +73,7 @@ class PKE(object):
             self.precursor_density.append(precursor_initial)
 
     def rho_input(self):
-        print("\nPlease insert coefficients reactivity function\n")
+        print("\nPlease insert coefficients for reactivity function\n")
         if self.mode == 0:
             print("Step function\n")
             rho_initial = float(input("Initial reactivity : "))
