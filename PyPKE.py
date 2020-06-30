@@ -9,10 +9,6 @@ import sys
 file_path = './'
 parameters_file_name = 'kinetics_parameters.txt'
 
-# constants for ramp function
-super_small = -100000000
-threshold = 0.000001
-
 # This function reads the K.P. input text file
 def read_kinetics_parameters(name):
     f = open(file_path + parameters_file_name, 'rt')
@@ -44,12 +40,12 @@ def read_kinetics_parameters(name):
         beta.append(float(beta_str))
     for lda_str in lda_str_list:
         lda.append(float(lda_str))
-    print('Kinetics parameters being used in PyPKE are the following,\nBeta\n',beta,'\nLambda\n', lda, '\nPrompt neutron life time\n', life)
+    print('Kinetics parameters being used in PyPKE are the following,\nBeta\n>>', beta, '\nLambda\n>>', lda,
+          '\nPrompt neutron life time\n', life)
     return [beta, lda, life]
 
-
 class PKE(object):
-    def __init__(self, reactivity=0, mode_number=0):
+    def __init__(self, mode_number=0):
         print('Welcome to PyPKE!\nIf you want more information about the program,\n'
               'please refer to the README.md or visit the GitHub URL.\n'
               'https://github.com/ComputelessComputer/PyPKE')
@@ -62,8 +58,13 @@ class PKE(object):
         self.name = self.name.upper()
         self.beta, self.lda, self.life = read_kinetics_parameters(self.name)
         self.time_step = 0.0001
-        self.rho = reactivity
+        # mode number decides the reactivity function modes
         self.mode = mode_number
+        self.rho = 0
+        self.rho_initial, self.rho_final, self.time_taken = 0, 0, 0
+        self.rho_input()
+
+        # coefficients determined by rho
         self.gen = self.life * (1 - self.rho)
         self.neutron_density = 1
         self.precursor_density = []
@@ -71,13 +72,25 @@ class PKE(object):
             precursor_initial = self.beta[i] / self.lda[i] / self.gen
             self.precursor_density.append(precursor_initial)
 
-    # Update for ramp
-    def reactivity_function(self, time):
-        end_point = -4.624780 * sum(self.beta)
-        if time < 47:
-            self.rho = time * end_point / 47
+    def rho_input(self):
+        print("\nPlease insert coefficients reactivity function\n")
+        if self.mode == 0:
+            print("Step function\n")
+            rho_initial = float(input("Initial reactivity : "))
+            self.rho = rho_initial
+        elif self.mode == 1:
+            print("Ramp function\n")
+            self.rho_initial = float(input("Initial reactivity : "))
+            self.rho_final = float(input("Final reactivity   : "))
+            self.time_taken = float(input("Time taken         : "))
+            self.rho = self.rho_initial
+
+    # Update for ramp decline
+    def ramp_reactivity(self, time):
+        if time < self.time_taken:
+            self.rho = self.rho_initial + (self.rho_final - self.rho_initial) / self.time_taken * time
         else:
-            self.rho = end_point
+            self.rho = self.rho_final
 
     def neutron(self, time):
         time = time // self.time_step * self.time_step
@@ -87,7 +100,8 @@ class PKE(object):
             res = self.neutron_density * (1 + self.time_step * (self.rho - sum(self.beta)) / self.gen)
             for i in range(6):
                 res += self.time_step * self.lda[i] * self.precursor_density[i]
-            #self.update_neutron(res)
+            res += 0.5 * (self.time_step ** 2) * (
+                    (((self.rho - sum(self.beta)) / self.gen) ** 2) * self.neutron_density)
             return res
 
     def precursor(self, index, time):
@@ -97,7 +111,6 @@ class PKE(object):
         else:
             res = self.precursor_density[index] * (1 - self.time_step * self.lda[index]) \
                   + self.time_step * self.beta[index] / self.gen * self.neutron_density
-            #self.update_precursor(res, index)
             return res
 
     def update_neutron(self, neutron):
@@ -107,19 +120,22 @@ class PKE(object):
         self.precursor_density[i] = precursor
 
     def run(self):
-        rho_string = "{:.4f}".format(self.rho)
+        # Decision of file name and opening it
+        rho_string = "{:.6f}".format(self.rho)
         file_name = ""
         if self.mode == 0:
             file_name += "[Step] "
         elif self.mode == 1:
             file_name += "[Ramp] "
-        file_name += 'PyPKE_rho=' + rho_string + '_kp=' + self.name + '.dat'
+        file_name += 'PyPKE_rho_init=' + rho_string + '_kp=' + self.name + '.dat'
         f = open(file_path + file_name, 'wt')
-        print('Writing neutron and precursor data from 0s to 100s')
+
+        # Writing neutron and precursor density data from 0s to 100s
+        print('\nWriting neutron and precursor data from 0s to 100s\n')
         for val in tqdm(range(int(100 / self.time_step))):
             t = val * self.time_step
             if self.mode == 1:
-                self.reactivity_function(t)
+                self.ramp_reactivity(t)
             neutron_density = self.neutron(t)
             precursor_density = []
             for j in range(6):
@@ -130,34 +146,25 @@ class PKE(object):
                 self.update_precursor(precursor_density[i], i)
 
             if val % 100 == 0:
-                f.write('%.4f' % t + " ")
-                f.write('{:.4e}'.format(neutron_density) + " ")
+                f.write('%.6f' % t + " ")
+                f.write('{:.6e}'.format(neutron_density) + " ")
                 for j in range(6):
-                    f.write('{:.4e}'.format(precursor_density[j]) + " ")
+                    f.write('{:.6e}'.format(precursor_density[j]) + " ")
                 f.write("\n")
         f.close()
 
 
-def main(arg1, arg2):
-    pke = PKE(arg1, arg2)
+def main(arg):
+    pke = PKE(arg)
     pke.run()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--k", help="Multiplication factor", type=float)
-    parser.add_argument("--r", help="Reactivity", type=float)
-    parser.add_argument("--mode", help="default : step / 1 : ramp_dec / 2: ramp_inc", type=int)
+    parser.add_argument("--mode", help="0(default) : step / 1 : ramp", type=int)
     args = parser.parse_args()
-    tmp = 0
-    if args.k:
-        print('Multiplication mode', end=' ')
-        tmp = 1 - 1 / args.k
-    if args.r:
-        print('Reactivity mode', end=' ')
-        tmp = args.r
     if args.mode == 0:
-        print("+ step function\n")
+        print("Initializing PyPKE with step reactivity function\n")
     elif args.mode == 1:
-        print("+ ramp function\n")
-    main(tmp, args.mode)
+        print("Initializing PyPKE with ramp reactivity function\n")
+    main(args.mode)
