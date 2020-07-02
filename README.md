@@ -131,9 +131,9 @@ Initial reactivity : -.0001
 The graph will be stored in the current directory as .png format.
 1. Step reactivity
 
-![alt text](https://github.com/PyPKE/[Step] PyPKE_rho_init=-0.000100_kp=AGN-201K.png?raw=true)
+![alt text]([Step] PyPKE_rho_init=-0.000100_kp=AGN-201K.png)
 
 2. Ramp reactivity
 
-![alt text](https://github.com/PyPKE/[Ramp] PyPKE_rho_init=-0.001000_kp=AGN-201K.png?raw=true)
+![alt text]([Ramp] PyPKE_rho_init=-0.001000_kp=AGN-201K.png)
 ## To be continued...
