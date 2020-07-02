@@ -12,20 +12,13 @@ If you have any suggestions to improve PyPKE, please contact via e-mail; botsfor
 1. Git clone to local environment or virtual environment
 ```
 $ git clone https://github.com/ComputelessComputer/PyPKE
-Cloning into 'PyPKE'...
-remote: Enumerating objects: 21, done.
-remote: Counting objects: 100% (21/21), done.
-remote: Compressing objects: 100% (20/20), done.
-remote: Total 21 (delta 4), reused 0 (delta 0), pack-reused 0
-Unpacking objects: 100% (21/21), done.
 ```
 
 2. Install required packages
 ```
 $ pip install -r requirements.txt
-Requirement already satisfied: tqdm in /opt/anaconda3/lib/python3.7/site-packages (from -r requirements.txt (line 1)) (4.36.1)
 ```
-  If this doesn't work, that is probably because you do NOT have pip installed in your environment.
+If this doesn't work, that is probably because you do NOT have pip installed in your environment.
 
 ```
 $ sudo apt install python-pip
@@ -36,51 +29,68 @@ $ sudo apt install python-pip
 $ python -V
 Python 3.6.9
 ```
-  If the version is 3.X, there will be no problem for running PyPKE.
-
-## Run the program
+If the version is 3.X, you will have no problem running PyPKE.
+  
+## To see help
 ```
-$ python PyPKE.py --mode 1
-Initializing PyPKE with ramp reactivity function
+$ python PyPKE.py -h
+usage: PyPKE.py [-h] [-F FUNCTION] [-O OUTPUT]
 
-Welcome to PyPKE!
-If you want more information about the program,
-please refer to the README.md or visit the GitHub URL.
-https://github.com/ComputelessComputer/PyPKE
+optional arguments:
+  -h, --help            show this help message and exit
+  -F FUNCTION, --function FUNCTION
+                        0(default) : step / 1 : ramp
+  -O OUTPUT, --output OUTPUT
+                        0(default) : *.dat only / 1 : graph only / 2 : both
+```
+## Run the program
+1. Running in default mode: step reactivity + .dat file output only
+```
+$ python PyPKE.py
+```
+2. You can now select the kinetic parameters given by different experiments.
+The parameters can be typed in as lower case.
+```
+Initializing PyPKE with step reactivity function
+Output file : graph only
+
++--------------------------------------------------------+
+|                    Welcome to PyPKE!                   |
+| A numerical analysis of the point kinetics equation.   |
+| If you want more information about the program,        |
+| please refer to the README.md or visit the GitHub URL. |
+| https://github.com/ComputelessComputer/PyPKE           |
++--------------------------------------------------------+
 
 These are the names for the various kinetic parameters serviced by PyPKE
 ========================================================================
 AGN-201K
 REFERENCE-1
 
+Please enter the kinetics parameters model name:
+```
+3. By choosing AGN-201K, the next input for reactivity shows up.
+```
 Please enter the kinetics parameters model name: agn-201k
 Kinetics parameters being used in PyPKE are the following,
 Beta
- [0.000331, 0.002198, 0.001963, 0.003972, 0.001156, 0.000465]
+>> [0.000331, 0.002198, 0.001963, 0.003972, 0.001156, 0.000465]
 Lambda
- [0.0124, 0.0305, 0.111, 0.301, 1.13, 3.0]
+>> [0.0124, 0.0305, 0.111, 0.301, 1.13, 3.0]
 Prompt neutron life time
  0.0001
 
 Please insert coefficients for reactivity function
 
-Ramp function
+Step function
 
-Initial reactivity : -.002
-Final reactivity   : .001
-Time taken         : 50
-Writing neutron and precursor data from 0s to 100s
-100%|██████████████████████████████████████████████████████████████████████████████| 1000000/1000000 [00:08<00:00, 114012.10it/s]
+Initial reactivity : 
+```
+4. By typing in arbitrary input values, the result will be created via current directory.
+```
+Initial reactivity : -.0001
+100%|██████████████████████████████████████████████████████████████████████████████| 1000000/1000000 [00:07<00:00, 131821.78it/s]
 ```
 
-## To see help
-```
-$ python PyPKE.py -h
-usage: PyPKE.py [-h] [--mode MODE]
-
-optional arguments:
-  -h, --help   show this help message and exit
-  --mode MODE  0(default) : step / 1 : ramp
-```
 
 ## To be continued...
