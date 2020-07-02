@@ -129,5 +129,8 @@ Initial reactivity : -.0001
 100%|██████████████████████████████████████████████████████████████████████████████| 1000000/1000000 [00:07<00:00, 131821.78it/s]
 ```
 The graph will be stored in the current directory as .png format.
-![alt text](https://github.com/ComputelessComputer/PyPKE/blob/[branch]/image.jpg?raw=true)
+1. Step reactivity
+![alt text](https://github.com/PyPKE/[Step] PyPKE_rho_init=-0.000100_kp=AGN-201K.png?raw=true)
+2. Ramp reactivity
+![alt text](https://github.com/PyPKE/[Ramp] PyPKE_rho_init=-0.001000_kp=AGN-201K.png?raw=true)
 ## To be continued...
