@@ -134,7 +134,9 @@ The graph will be stored in the current directory as .png format.
 
 ## How to add kinetic parameters?
 The kinetics_parameters.txt file reads each line and finds the tag for the model name.
+
 Then it uses the constant floating point values for computation.
+
 The values must be implemented in sequential order, like the example below.
 ```
 [AGN-201K]                                              # kp model name
