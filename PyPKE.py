@@ -1,6 +1,8 @@
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 import argparse
 import sys
+import numpy as np
 
 # The file path where you are going to save the *.dat file
 # The default directory will be where you place your PyPKE.py at
@@ -8,6 +10,7 @@ import sys
 # the *.dat file will be made there too
 file_path = './'
 parameters_file_name = 'kinetics_parameters.txt'
+
 
 # This function reads the K.P. input text file
 def read_kinetics_parameters(name):
@@ -44,23 +47,30 @@ def read_kinetics_parameters(name):
           '\nPrompt neutron life time\n', life)
     return [beta, lda, life]
 
+
 class PKE(object):
-    def __init__(self, mode_number=0):
-        print('Welcome to PyPKE!\nIf you want more information about the program,\n'
-              'please refer to the README.md or visit the GitHub URL.\n'
-              'https://github.com/ComputelessComputer/PyPKE')
+    def __init__(self, mode_number=0, output_number=0):
+        print("+--------------------------------------------------------+\n"
+              "|                    Welcome to PyPKE!                   |\n"
+              "| A numerical analysis of the point kinetics equation.   |\n"
+              "| If you want more information about the program,        |\n"
+              "| please refer to the README.md or visit the GitHub URL. |\n"
+              "| https://github.com/ComputelessComputer/PyPKE           |\n"
+              "+--------------------------------------------------------+")
         # default kinetics parameters are based on AGN-201K from KHU
-        print('\nThese are the names for the various kinetic parameters serviced by '
-              'PyPKE\n========================================================================\n'
-              'AGN-201K\n'
-              'REFERENCE-1\n')
-        self.name = input('Please enter the kinetics parameters model name: ')
+        print("\nThese are the names for the various kinetic parameters serviced by "
+              "PyPKE\n========================================================================\n"
+              "AGN-201K\n"
+              "REFERENCE-1\n")
+        self.name = input("Please enter the kinetics parameters model name: ")
         self.name = self.name.upper()
         self.beta, self.lda, self.life = read_kinetics_parameters(self.name)
         self.time_step = 0.0001
+        self.output_number = output_number
         # mode number decides the reactivity function modes
         self.mode = mode_number
         self.rho = 0
+        # For ramp
         self.rho_initial, self.rho_final, self.time_taken = 0, 0, 0
         self.rho_input()
 
@@ -76,8 +86,7 @@ class PKE(object):
         print("\nPlease insert coefficients for reactivity function\n")
         if self.mode == 0:
             print("Step function\n")
-            rho_initial = float(input("Initial reactivity : "))
-            self.rho = rho_initial
+            self.rho = float(input("Initial reactivity : "))
         elif self.mode == 1:
             print("Ramp function\n")
             self.rho_initial = float(input("Initial reactivity : "))
@@ -100,8 +109,6 @@ class PKE(object):
             res = self.neutron_density * (1 + self.time_step * (self.rho - sum(self.beta)) / self.gen)
             for i in range(6):
                 res += self.time_step * self.lda[i] * self.precursor_density[i]
-            res += 0.5 * (self.time_step ** 2) * (
-                    (((self.rho - sum(self.beta)) / self.gen) ** 2) * self.neutron_density)
             return res
 
     def precursor(self, index, time):
@@ -127,44 +134,95 @@ class PKE(object):
             file_name += "[Step] "
         elif self.mode == 1:
             file_name += "[Ramp] "
-        file_name += 'PyPKE_rho_init=' + rho_string + '_kp=' + self.name + '.dat'
-        f = open(file_path + file_name, 'wt')
+        file_name += 'PyPKE_rho_init=' + rho_string + '_kp=' + self.name
 
-        # Writing neutron and precursor density data from 0s to 100s
-        print('\nWriting neutron and precursor data from 0s to 100s\n')
-        for val in tqdm(range(int(100 / self.time_step))):
-            t = val * self.time_step
-            if self.mode == 1:
-                self.ramp_reactivity(t)
-            neutron_density = self.neutron(t)
-            precursor_density = []
-            for j in range(6):
-                precursor_density.append(self.precursor(j, t))
+        if self.output_number == 0 or self.output_number == 2:
+            dat_file_name = file_name
+            dat_file_name += '.dat'
+            f = open(file_path + file_name, 'wt')
 
-            self.update_neutron(neutron_density)
-            for i in range(6):
-                self.update_precursor(precursor_density[i], i)
-
-            if val % 100 == 0:
-                f.write('%.6f' % t + " ")
-                f.write('{:.6e}'.format(neutron_density) + " ")
+            # Writing neutron and precursor density data from 0s to 100s
+            print('\nWriting neutron and precursor data from 0s to 100s\n')
+            for val in tqdm(range(int(100 / self.time_step))):
+                t = val * self.time_step
+                if self.mode == 1:
+                    self.ramp_reactivity(t)
+                neutron_density = self.neutron(t)
+                precursor_density = []
                 for j in range(6):
-                    f.write('{:.6e}'.format(precursor_density[j]) + " ")
-                f.write("\n")
-        f.close()
+                    precursor_density.append(self.precursor(j, t))
+
+                self.update_neutron(neutron_density)
+                for i in range(6):
+                    self.update_precursor(precursor_density[i], i)
+
+                if val % 100 == 0:
+                    f.write('%.6f' % t + " ")
+                    f.write('{:.6e}'.format(neutron_density) + " ")
+                    for j in range(6):
+                        f.write('{:.6e}'.format(precursor_density[j]) + " ")
+                    f.write("\n")
+            f.close()
+
+        if self.output_number == 1 or self.output_number == 2:
+            plt_file_name = file_name
+            plt_file_name += '.png'
+
+            neutron_density_record = []
+            for val in tqdm(range(int(100 / self.time_step))):
+                t = val * self.time_step
+                if self.mode == 1:
+                    self.ramp_reactivity(t)
+                neutron_density = self.neutron(t)
+                precursor_density = []
+                for j in range(6):
+                    precursor_density.append(self.precursor(j, t))
+
+                self.update_neutron(neutron_density)
+                for i in range(6):
+                    self.update_precursor(precursor_density[i], i)
+
+                neutron_density_record.append(neutron_density)
+
+            neutron_density_record = np.array(neutron_density_record)
+            plt.title(file_name)
+            plt.grid(True)
+            plt.xlabel('Time [s]')
+            plt.ylabel('Neutron density ratio')
+            plt.xlim([0, 100])
+            plt.plot(np.arange(0, 100, self.time_step), neutron_density_record, 'b-')
+            plt.savefig(plt_file_name, dpi=300)
 
 
-def main(arg):
-    pke = PKE(arg)
+def main(arg1, arg2):
+    pke = PKE(arg1, arg2)
     pke.run()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", help="0(default) : step / 1 : ramp", type=int)
+    parser.add_argument('-F', "--function", help="0(default) : step / 1 : ramp", type=int)
+    parser.add_argument('-O', "--output", help="0(default) : *.dat only / 1 : graph only / 2 : both", type=int)
     args = parser.parse_args()
-    if args.mode == 0:
-        print("Initializing PyPKE with step reactivity function\n")
-    elif args.mode == 1:
-        print("Initializing PyPKE with ramp reactivity function\n")
-    main(args.mode)
+    arg1, arg2 = 0, 0
+
+    if args.function == 0 or args.function is None:
+        print("Initializing PyPKE with step reactivity function")
+    elif args.function == 1:
+        arg1 = 1
+        print("Initializing PyPKE with ramp reactivity function")
+    else:
+        sys.exit('There is no such reactivity function!')
+
+    if args.output == 0 or args.output is None:
+        print("Output file : text only\n")
+    elif args.output == 1:
+        arg2 = 1
+        print("Output file : graph only\n")
+    elif args.output == 2:
+        arg2 = 2
+        print("Output file : text and graph\n")
+    else:
+        sys.exit('There is no such output mode!')
+
+    main(arg1, arg2)
