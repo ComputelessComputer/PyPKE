@@ -132,4 +132,18 @@ The graph will be stored in the current directory as .png format.
 
 ![Step reactivity](https://github.com/ComputelessComputer/PyPKE/blob/master/%5BStep%5D%20PyPKE_rho_init%3D-0.000100_kp%3DAGN-201K.png?raw=true)
 
+## How to add kinetic parameters?
+The kinetics_parameters.txt file reads each line and finds the tag for the model name.
+Then it uses the constant floating point values for computation.
+The values must be implemented in sequential order, like the example below.
+```
+[AGN-201K]                                              # kp model name
+<Beta>                                                  # beta tag
+0.000331 0.002198 0.001963 0.003972 0.001156 0.000465   # Group 1 ~ 6 beta values
+<Lambda>                                                # lambda tag
+0.0124 0.0305 0.1110 0.3010 1.1300 3.0000               # Group 1 ~ 6 lambda values
+<Life-time>                                             # prompt neutron life-time tag
+0.0001                                                  # life-time value
+```
+
 ## To be continued...
