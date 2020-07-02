@@ -22,18 +22,17 @@ If this doesn't work, that is probably because you do NOT have pip installed in 
 
 ```
 $ sudo apt install python-pip
-...
 ```
   Also, you might want to check your Python version.
 ```
 $ python -V
-Python 3.6.9
 ```
 If the version is 3.X, you will have no problem running PyPKE.
   
 ## To see help
 ```
 $ python PyPKE.py -h
+
 usage: PyPKE.py [-h] [-F FUNCTION] [-O OUTPUT]
 
 optional arguments:
@@ -95,7 +94,8 @@ Initial reactivity : -.0001
 ## Graph output
 PyPKE currently supports graphs for neutron-density ratio. (Will soon support precursor-density ratio plot.)
 ```
-(untitled) C:\Users\John\PycharmProjects\untitled>python PyPKE.py -O 1
+$ python PyPKE.py -O 1
+
 Initializing PyPKE with step reactivity function
 Output file : graph only
 
