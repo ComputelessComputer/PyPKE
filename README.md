@@ -52,7 +52,7 @@ $ python PyPKE.py
 The parameters can be typed in as lower case.
 ```
 Initializing PyPKE with step reactivity function
-Output file : graph only
+Output file : text only
 
 +--------------------------------------------------------+
 |                    Welcome to PyPKE!                   |
@@ -92,5 +92,42 @@ Initial reactivity : -.0001
 100%|██████████████████████████████████████████████████████████████████████████████| 1000000/1000000 [00:07<00:00, 131821.78it/s]
 ```
 
+## Graph output
+PyPKE currently supports graphs for neutron-density ratio. (Will soon support precursor-density ratio plot.)
+```
+(untitled) C:\Users\John\PycharmProjects\untitled>python PyPKE.py -O 1
+Initializing PyPKE with step reactivity function
+Output file : graph only
 
++--------------------------------------------------------+
+|                    Welcome to PyPKE!                   |
+| A numerical analysis of the point kinetics equation.   |
+| If you want more information about the program,        |
+| please refer to the README.md or visit the GitHub URL. |
+| https://github.com/ComputelessComputer/PyPKE           |
++--------------------------------------------------------+
+
+These are the names for the various kinetic parameters serviced by PyPKE
+========================================================================
+AGN-201K
+REFERENCE-1
+
+Please enter the kinetics parameters model name: agn-201k
+Kinetics parameters being used in PyPKE are the following,
+Beta
+>> [0.000331, 0.002198, 0.001963, 0.003972, 0.001156, 0.000465]
+Lambda
+>> [0.0124, 0.0305, 0.111, 0.301, 1.13, 3.0]
+Prompt neutron life time
+ 0.0001
+
+Please insert coefficients for reactivity function
+
+Step function
+
+Initial reactivity : -.0001
+100%|██████████████████████████████████████████████████████████████████████████████| 1000000/1000000 [00:07<00:00, 131821.78it/s]
+```
+The graph will be stored in the current directory as .png format.
+![alt text](https://github.com/ComputelessComputer/PyPKE/blob/[branch]/image.jpg?raw=true)
 ## To be continued...
